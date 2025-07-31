@@ -5,8 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { DecryptionModal } from '@/components/DecryptionModal'
-import { Search, Eye, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Search, Eye, Clock, CheckCircle, XCircle, Wifi, WifiOff } from 'lucide-react'
 import { searchMessages, getRecentMessages, MessageSummary } from '@/services/messageService'
+import { realtimeService, MessageUpdate } from '@/services/realtimeService'
+import { useAccount } from 'wagmi'
+import { useToast } from '@/hooks/use-toast'
 
 export function MessageExplorer() {
   const [searchAddress, setSearchAddress] = useState('')
@@ -15,11 +18,114 @@ export function MessageExplorer() {
   const [isDecryptionModalOpen, setIsDecryptionModalOpen] = useState(false)
   const [messages, setMessages] = useState<MessageSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false)
+  const { address } = useAccount()
+  const { toast } = useToast()
 
   // Load recent messages on component mount
   useEffect(() => {
     loadRecentMessages()
+    setupRealtimeConnection()
   }, [])
+
+  // Setup real-time connection when wallet connects
+  useEffect(() => {
+    if (address) {
+      subscribeToAddress(address)
+    }
+  }, [address])
+
+  // Cleanup real-time connection on unmount
+  useEffect(() => {
+    return () => {
+      cleanupRealtimeConnection()
+    }
+  }, [])
+
+  const setupRealtimeConnection = async () => {
+    try {
+      await realtimeService.connect({
+        onMessageCreated: handleMessageCreated,
+        onMessageUpdated: handleMessageUpdated,
+        onMessageDeleted: handleMessageDeleted,
+        onError: handleRealtimeError
+      })
+      setIsRealtimeConnected(true)
+    } catch (error) {
+      console.error('Failed to setup real-time connection:', error)
+      setIsRealtimeConnected(false)
+    }
+  }
+
+  const subscribeToAddress = async (walletAddress: string) => {
+    try {
+      await realtimeService.subscribeToAddress(walletAddress, {
+        onMessageCreated: handleMessageCreated,
+        onMessageUpdated: handleMessageUpdated,
+        onMessageDeleted: handleMessageDeleted,
+        onError: handleRealtimeError
+      })
+    } catch (error) {
+      console.error('Failed to subscribe to address:', error)
+    }
+  }
+
+  const cleanupRealtimeConnection = async () => {
+    try {
+      await realtimeService.disconnect()
+      setIsRealtimeConnected(false)
+    } catch (error) {
+      console.error('Failed to cleanup real-time connection:', error)
+    }
+  }
+
+  const handleMessageCreated = (messageUpdate: MessageUpdate) => {
+    // Convert MessageUpdate to MessageSummary format
+    const newMessage: MessageSummary = {
+      id: messageUpdate.id,
+      recipientAddress: messageUpdate.recipientAddress,
+      encryptedAt: messageUpdate.encryptedAt,
+      expiresIn: messageUpdate.expiresIn,
+      isRead: messageUpdate.isRead,
+      expirationDays: messageUpdate.expirationDays
+    }
+
+    setMessages(prev => [newMessage, ...prev])
+    
+    // Show notification for new messages
+    if (address && messageUpdate.recipientAddress.toLowerCase() === address.toLowerCase()) {
+      toast({
+        title: "New Message Received",
+        description: "You have received a new encrypted message.",
+      })
+    }
+  }
+
+  const handleMessageUpdated = (messageUpdate: MessageUpdate) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageUpdate.id 
+        ? {
+            ...msg,
+            isRead: messageUpdate.isRead,
+            expiresIn: messageUpdate.expiresIn
+          }
+        : msg
+    ))
+  }
+
+  const handleMessageDeleted = (messageId: string) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId))
+  }
+
+  const handleRealtimeError = (error: Error) => {
+    console.error('Real-time error:', error)
+    setIsRealtimeConnected(false)
+    toast({
+      title: "Connection Error",
+      description: "Lost connection to real-time updates. Trying to reconnect...",
+      variant: "destructive",
+    })
+  }
 
   const loadRecentMessages = async () => {
     setIsLoading(true)
@@ -28,6 +134,11 @@ export function MessageExplorer() {
       setMessages(recentMessages)
     } catch (error) {
       console.error('Failed to load recent messages:', error)
+      toast({
+        title: "Failed to Load Messages",
+        description: "Unable to load recent messages. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -50,6 +161,11 @@ export function MessageExplorer() {
     } catch (error) {
       console.error('Search failed:', error)
       setMessages([])
+      toast({
+        title: "Search Failed",
+        description: "Unable to search for messages. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSearching(false)
     }
@@ -89,7 +205,19 @@ export function MessageExplorer() {
   return (
     <Card className="shadow">
       <CardHeader>
-        <CardTitle className="text-lg">Message Explorer</CardTitle>
+        <CardTitle className="text-lg flex items-center justify-between">
+          <span>Message Explorer</span>
+          <div className="flex items-center gap-2">
+            {isRealtimeConnected ? (
+              <Wifi className="h-4 w-4 text-green-500" />
+            ) : (
+              <WifiOff className="h-4 w-4 text-red-500" />
+            )}
+            <span className="text-xs text-muted-foreground">
+              {isRealtimeConnected ? 'Live' : 'Offline'}
+            </span>
+          </div>
+        </CardTitle>
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -137,9 +265,17 @@ export function MessageExplorer() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              Showing {messages.length} message{messages.length !== 1 ? 's' : ''}
-              {searchAddress && ` for "${searchAddress}"`}
+            <div className="text-sm text-muted-foreground flex items-center justify-between">
+              <span>
+                Showing {messages.length} message{messages.length !== 1 ? 's' : ''}
+                {searchAddress && ` for "${searchAddress}"`}
+              </span>
+              {isRealtimeConnected && (
+                <span className="flex items-center gap-1 text-green-600">
+                  <Wifi className="h-3 w-3" />
+                  Live updates
+                </span>
+              )}
             </div>
             
             <div className="border rounded-lg">

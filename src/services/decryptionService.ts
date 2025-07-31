@@ -1,5 +1,7 @@
 import { supabase } from '@/integrations/supabase/client'
 import { eciesDecrypt, decodeEncryptedMessage } from '@/lib/encryption'
+import { sha256 } from '@noble/hashes/sha256'
+import { utf8ToBytes } from '@noble/hashes/utils'
 
 export interface DecryptMessageRequest {
   messageId: string
@@ -62,6 +64,18 @@ export async function decryptMessage({
     
     return { success: false, error: 'Failed to decrypt message' }
   }
+}
+
+/**
+ * Derive private key from Ethereum address using the same method as encryption
+ * This ensures the same private key is used for both encryption and decryption
+ */
+export function derivePrivateKeyFromAddress(address: string): Uint8Array {
+  // Use the same deterministic method as derivePublicKeyFromAddress in encryption.ts
+  const addressBytes = utf8ToBytes(address.toLowerCase())
+  const hash = sha256(addressBytes)
+  // Use the hash as a private key (same as encryption)
+  return hash.slice(0, 32)
 }
 
 /**

@@ -21,6 +21,8 @@ export const config = createConfig({
       appName: metadata.name,
       appLogoUrl: metadata.icons[0]
     })
+    // Note: Hardware wallet connectors (Ledger, Trezor) are not available in current wagmi version
+    // They can be added when supported in future versions
   ],
   transports: {
     [mainnet.id]: http(),
