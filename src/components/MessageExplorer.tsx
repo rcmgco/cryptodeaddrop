@@ -4,10 +4,20 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { DecryptionModal } from '@/components/DecryptionModal'
 import { Search, Eye, Clock, CheckCircle, XCircle } from 'lucide-react'
 
 // Mock data for demonstration
-const mockMessages = [
+interface MockMessage {
+  id: string
+  recipientAddress: string
+  encryptedAt: string
+  expiresIn: string
+  isRead: boolean
+  expiration: string
+}
+
+const mockMessages: MockMessage[] = [
   {
     id: '1',
     recipientAddress: '0x742d35Cc6625C5532c2B68Deb094B6E0e4b19320',
@@ -37,6 +47,8 @@ const mockMessages = [
 export function MessageExplorer() {
   const [searchAddress, setSearchAddress] = useState('')
   const [isSearching, setIsSearching] = useState(false)
+  const [selectedMessage, setSelectedMessage] = useState<MockMessage | null>(null)
+  const [isDecryptionModalOpen, setIsDecryptionModalOpen] = useState(false)
 
   const filteredMessages = searchAddress 
     ? mockMessages.filter(msg => 
@@ -56,6 +68,16 @@ export function MessageExplorer() {
   const truncateAddress = (address: string) => {
     if (address.endsWith('.eth')) return address
     return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
+  const handleDecryptMessage = (message: MockMessage) => {
+    setSelectedMessage(message)
+    setIsDecryptionModalOpen(true)
+  }
+
+  const handleCloseDecryptionModal = () => {
+    setIsDecryptionModalOpen(false)
+    setSelectedMessage(null)
   }
 
   const getStatusBadge = (isRead: boolean, expiresIn: string) => {
@@ -156,6 +178,7 @@ export function MessageExplorer() {
                           size="sm"
                           variant={message.isRead ? "outline" : "default"}
                           className="h-8 px-3"
+                          onClick={() => handleDecryptMessage(message)}
                         >
                           {message.isRead ? 'View' : 'Decrypt'}
                         </Button>
@@ -168,6 +191,12 @@ export function MessageExplorer() {
           </div>
         )}
       </CardContent>
+      
+      <DecryptionModal
+        isOpen={isDecryptionModalOpen}
+        onClose={handleCloseDecryptionModal}
+        message={selectedMessage}
+      />
     </Card>
   )
 }
