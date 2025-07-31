@@ -1,324 +1,437 @@
-# DeGhost Messenger v0.1 - Architecture Specification
+# CryptoDeadDrop v0.1 - Architecture Specification
 
-## System Overview
-DeGhost Messenger is a Web3-enabled encrypted messaging platform that leverages Ethereum wallet cryptography for secure, ephemeral communication. The system uses asymmetric encryption where messages are encrypted with public wallet addresses and can only be decrypted by the corresponding private key holder.
+## Overview
 
-## Architecture Principles
-- **Security First**: End-to-end encryption with no plaintext storage
-- **Decentralized**: No central authority can access encrypted messages
-- **Privacy by Design**: Minimal data collection, temporary storage
-- **Wallet-Centric**: Leverage existing Web3 identity infrastructure
-- **Ephemeral**: Time-bound messages with automatic expiration
+CryptoDeadDrop is a Web3-enabled encrypted messaging platform that leverages Ethereum wallet cryptography for secure, ephemeral communication. The system uses asymmetric encryption where messages are encrypted with the recipient's public key and can only be decrypted by the holder of the corresponding private key.
 
-## Technology Stack
+## System Architecture
 
-### Frontend
+### High-Level Architecture
+
 ```
-React 18 + TypeScript
-├── UI Framework: Tailwind v4 + shadcn/ui (Doom 64 theme)
-├── Web3 Integration: ethers.js v6
-├── Wallet Connectors: WalletConnect v2, MetaMask SDK
-├── State Management: React Query + Zustand
-├── Routing: React Router v6
-├── Markdown: react-markdown + remark plugins
-└── Crypto: Web Crypto API + ethers crypto utils
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Backend       │    │   Database      │
+│   (React)       │◄──►│   (Supabase)    │◄──►│   (PostgreSQL)  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Web3 Wallet   │    │   Real-time     │    │   Row Level     │
+│   Integration   │    │   Subscriptions │    │   Security      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### Backend (Supabase Integration)
+### Technology Stack
+
+#### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **State Management**: React Context + TanStack Query
+- **Routing**: React Router DOM
+- **Web3**: Wagmi + Web3Modal + Ethers.js
+
+#### Backend
+- **Platform**: Supabase (PostgreSQL + Real-time)
+- **Authentication**: Wallet-based (EIP-191 signatures)
+- **API**: Supabase Client + Edge Functions
+- **Real-time**: Supabase Realtime
+
+#### Cryptography
+- **Encryption**: ECIES (Elliptic Curve Integrated Encryption Scheme)
+- **Algorithm**: AES-256-GCM
+- **Curve**: secp256k1 (Ethereum standard)
+- **Key Derivation**: HKDF-SHA256
+- **Libraries**: @noble/ciphers, @noble/secp256k1
+
+## Data Flow
+
+### Message Encryption Flow
+
 ```
-Supabase
-├── Database: PostgreSQL with RLS policies
-├── Authentication: Wallet-based auth
-├── Edge Functions: Deno runtime for crypto operations
-├── Real-time: Subscriptions for message updates
-└── Storage: Temporary encrypted message storage
+1. User Input
+   ├── Message (max 500 chars)
+   ├── Recipient Address (Ethereum)
+   └── Expiration (1/10/30 days)
+
+2. Validation
+   ├── Address format validation
+   ├── Message length check
+   └── Expiration validation
+
+3. Encryption
+   ├── Generate ephemeral key pair
+   ├── Derive shared secret (ECDH)
+   ├── Encrypt message (AES-256-GCM)
+   └── Create ciphertext package
+
+4. Storage
+   ├── Store encrypted message
+   ├── Store metadata (expiration, timestamp)
+   └── Return message ID
 ```
 
-## Data Architecture
+### Message Decryption Flow
 
-### Database Schema
+```
+1. Message Discovery
+   ├── Search by wallet address
+   ├── Filter by expiration
+   └── Return encrypted messages
+
+2. Wallet Connection
+   ├── Connect Web3 wallet
+   ├── Verify wallet ownership
+   └── Get private key access
+
+3. Decryption
+   ├── Extract ephemeral public key
+   ├── Derive shared secret (ECDH)
+   ├── Decrypt message (AES-256-GCM)
+   └── Verify message integrity
+
+4. Verification
+   ├── Sign challenge message
+   ├── Verify signature
+   └── Record decryption event
+```
+
+## Database Schema
+
+### Core Tables
+
+#### messages
 ```sql
--- Messages table
 CREATE TABLE messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_address TEXT NOT NULL,
-  encrypted_content TEXT NOT NULL,
-  sender_hash TEXT, -- Optional anonymous sender identifier
+  encrypted_message TEXT NOT NULL,
+  ephemeral_public_key TEXT NOT NULL,
+  expiration_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  decrypted_at TIMESTAMP WITH TIME ZONE,
-  read_count INTEGER DEFAULT 0,
-  metadata JSONB -- Additional encrypted metadata
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Indexes for performance
+-- Indexes
 CREATE INDEX idx_messages_recipient ON messages(recipient_address);
-CREATE INDEX idx_messages_expiry ON messages(expires_at);
-CREATE INDEX idx_messages_created ON messages(created_at DESC);
-
--- Analytics table
-CREATE TABLE analytics (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  event_type TEXT NOT NULL, -- 'encrypt', 'decrypt', 'expire'
-  timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  metadata JSONB
-);
+CREATE INDEX idx_messages_expiration ON messages(expiration_timestamp);
+CREATE INDEX idx_messages_created ON messages(created_at);
 ```
 
-### Row Level Security (RLS) Policies
+#### decryptions
 ```sql
--- Messages can be read by anyone (for discovery)
-CREATE POLICY "Messages are publicly readable" ON messages
+CREATE TABLE decryptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  message_id UUID REFERENCES messages(id) ON DELETE CASCADE,
+  decrypted_by_address TEXT NOT NULL,
+  decrypted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  signature TEXT NOT NULL,
+  challenge_message TEXT NOT NULL
+);
+
+-- Indexes
+CREATE INDEX idx_decryptions_message ON decryptions(message_id);
+CREATE INDEX idx_decryptions_address ON decryptions(decrypted_by_address);
+```
+
+#### read_receipts
+```sql
+CREATE TABLE read_receipts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  message_id UUID REFERENCES messages(id) ON DELETE CASCADE,
+  read_by_address TEXT NOT NULL,
+  read_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_read_receipts_message ON read_receipts(message_id);
+CREATE INDEX idx_read_receipts_address ON read_receipts(read_by_address);
+```
+
+### Row Level Security (RLS)
+
+```sql
+-- Messages: Only recipient can read their messages
+CREATE POLICY "Users can read their own messages" ON messages
+  FOR SELECT USING (recipient_address = current_setting('app.current_user_address'));
+
+-- Decryptions: Public read, authenticated write
+CREATE POLICY "Anyone can read decryptions" ON decryptions
   FOR SELECT USING (true);
 
--- Only authenticated users can insert messages
-CREATE POLICY "Authenticated users can insert messages" ON messages
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can create decryptions" ON decryptions
+  FOR INSERT WITH CHECK (current_setting('app.current_user_address') IS NOT NULL);
 
--- Messages can be updated only for decryption tracking
-CREATE POLICY "Allow decryption updates" ON messages
-  FOR UPDATE USING (true)
-  WITH CHECK (decrypted_at IS NOT NULL);
+-- Read receipts: Public read, authenticated write
+CREATE POLICY "Anyone can read read receipts" ON read_receipts
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can create read receipts" ON read_receipts
+  FOR INSERT WITH CHECK (current_setting('app.current_user_address') IS NOT NULL);
 ```
 
-## Encryption Architecture
+## API Endpoints
 
-### Message Encryption Flow
-```
-1. User inputs plaintext message
-2. System derives public key from recipient wallet address
-3. Generate ephemeral key pair for ECIES encryption
-4. Encrypt message using hybrid encryption:
-   - Generate random AES-256-GCM key
-   - Encrypt message with AES key
-   - Encrypt AES key with recipient's public key (ECIES)
-5. Store encrypted payload in database
-6. Return encryption confirmation
-```
+### Message Management
 
-### Decryption Flow
-```
-1. User connects wallet and searches for messages
-2. System finds encrypted messages for wallet address
-3. User initiates decryption for specific message
-4. Wallet signs verification challenge (gasless)
-5. System verifies signature matches recipient address
-6. If verified, return encrypted payload to client
-7. Client decrypts using wallet's private key:
-   - Extract encrypted AES key from payload
-   - Decrypt AES key using wallet private key
-   - Decrypt message content using AES key
-8. Display plaintext message
-9. Send read receipt to database
-```
-
-### Cryptographic Specifications
-- **Asymmetric Encryption**: ECIES (Elliptic Curve Integrated Encryption Scheme)
-- **Symmetric Encryption**: AES-256-GCM for message content
-- **Key Derivation**: secp256k1 curve (Ethereum standard)
-- **Signature Verification**: EIP-191 personal_sign method
-- **Random Generation**: Cryptographically secure PRNG
-
-## API Design
-
-### Core Endpoints
+#### POST /api/messages
+**Purpose**: Create encrypted message
+**Authentication**: None (public endpoint)
+**Request**:
 ```typescript
-// Message Management
-POST /api/messages/encrypt
-GET /api/messages/search?address={wallet_address}
-PUT /api/messages/{id}/decrypt
-DELETE /api/messages/cleanup-expired
-
-// Analytics
-GET /api/analytics/stats
-POST /api/analytics/track
-
-// Wallet Operations
-POST /api/wallet/verify-signature
-GET /api/wallet/challenges/{address}
+{
+  recipientAddress: string;
+  encryptedMessage: string;
+  ephemeralPublicKey: string;
+  expirationDays: 1 | 10 | 30;
+}
 ```
-
-### WebSocket Events
+**Response**:
 ```typescript
-// Real-time updates
-"message:encrypted" // New message available
-"message:decrypted" // Message was read
-"message:expired"   // Message expired and removed
-"analytics:updated" // Stats updated
+{
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+}
 ```
 
-## Security Considerations
-
-### Threat Model
-- **Adversaries**: Database administrators, network attackers, malicious users
-- **Assets**: Encrypted messages, wallet addresses, usage patterns
-- **Threats**: Message interception, replay attacks, timing analysis
-
-### Security Measures
-```
-1. Encryption at Rest
-   - All messages stored encrypted
-   - No plaintext in database logs
-   - Secure key derivation
-
-2. Transport Security
-   - HTTPS/TLS 1.3 for all communications
-   - Certificate pinning in production
-   - HSTS headers
-
-3. Wallet Security
-   - Gasless signature verification
-   - EIP-191 standard compliance
-   - Replay attack prevention
-   - Rate limiting on verification attempts
-
-4. Privacy Protection
-   - Address truncation in UI
-   - Optional sender anonymity
-   - Minimal metadata collection
-   - Automatic message expiration
-
-5. Application Security
-   - Input validation and sanitization
-   - XSS protection via CSP headers
-   - CSRF protection
-   - Rate limiting on all endpoints
+#### GET /api/messages/:address
+**Purpose**: Get messages for wallet address
+**Authentication**: None (public endpoint)
+**Response**:
+```typescript
+{
+  messages: Array<{
+    id: string;
+    encryptedMessage: string;
+    ephemeralPublicKey: string;
+    createdAt: string;
+    expiresAt: string;
+  }>;
+}
 ```
 
-## Performance Architecture
+### Decryption Tracking
+
+#### POST /api/decryptions
+**Purpose**: Record successful decryption
+**Authentication**: Wallet signature verification
+**Request**:
+```typescript
+{
+  messageId: string;
+  signature: string;
+  challengeMessage: string;
+}
+```
+
+#### GET /api/analytics
+**Purpose**: Get platform analytics
+**Authentication**: None (public endpoint)
+**Response**:
+```typescript
+{
+  totalMessages: number;
+  totalDecryptions: number;
+  successRate: number;
+  recentActivity: Array<{
+    timestamp: string;
+    type: 'encryption' | 'decryption';
+    address: string;
+  }>;
+}
+```
+
+## Security Architecture
+
+### Cryptographic Security
+
+#### Key Management
+- **Ephemeral Keys**: Generated per message for forward secrecy
+- **Key Derivation**: HKDF-SHA256 for secure key expansion
+- **Key Validation**: Proper curve point validation
+
+#### Encryption Process
+```typescript
+function encryptMessage(message: string, recipientPublicKey: string): EncryptedMessage {
+  // 1. Generate ephemeral key pair
+  const ephemeralKeyPair = secp256k1.utils.randomPrivateKey();
+  const ephemeralPublicKey = secp256k1.getPublicKey(ephemeralKeyPair);
+  
+  // 2. Derive shared secret
+  const sharedSecret = secp256k1.getSharedSecret(ephemeralKeyPair, recipientPublicKey);
+  
+  // 3. Derive encryption key
+  const salt = randomBytes(32);
+  const info = utf8ToBytes('CryptoDeadDrop-v0.1');
+  const encryptionKey = hkdf(sha256, sharedSecret, salt, info, 32);
+  
+  // 4. Encrypt message
+  const cipher = aes_256_gcm(encryptionKey);
+  const encrypted = cipher.encrypt(utf8ToBytes(message));
+  
+  return {
+    encryptedMessage: bytesToBase64(encrypted),
+    ephemeralPublicKey: bytesToBase64(ephemeralPublicKey),
+    salt: bytesToBase64(salt)
+  };
+}
+```
+
+#### Decryption Process
+```typescript
+function decryptMessage(encryptedMessage: EncryptedMessage, privateKey: string): string {
+  // 1. Extract ephemeral public key
+  const ephemeralPublicKey = base64ToBytes(encryptedMessage.ephemeralPublicKey);
+  
+  // 2. Derive shared secret
+  const sharedSecret = secp256k1.getSharedSecret(privateKey, ephemeralPublicKey);
+  
+  // 3. Derive decryption key
+  const salt = base64ToBytes(encryptedMessage.salt);
+  const info = utf8ToBytes('CryptoDeadDrop-v0.1');
+  const decryptionKey = hkdf(sha256, sharedSecret, salt, info, 32);
+  
+  // 4. Decrypt message
+  const cipher = aes_256_gcm(decryptionKey);
+  const decrypted = cipher.decrypt(base64ToBytes(encryptedMessage.encryptedMessage));
+  
+  return utf8ToString(decrypted);
+}
+```
+
+### Authentication & Authorization
+
+#### Wallet Authentication
+- **Challenge-Response**: EIP-191 personal message signing
+- **Nonce Protection**: Time-based challenge with expiration
+- **Signature Verification**: Local verification without network calls
+
+#### Access Control
+- **Row Level Security**: Database-level access control
+- **Address Validation**: Proper Ethereum address format validation
+- **Rate Limiting**: Request throttling to prevent abuse
+
+## Performance Considerations
 
 ### Optimization Strategies
-```
-1. Database Performance
-   - Efficient indexing on search columns
-   - Automatic cleanup of expired messages
-   - Connection pooling
-   - Query optimization
 
-2. Frontend Performance
-   - Code splitting by route
-   - Lazy loading of wallet connectors
-   - Memoized expensive calculations
-   - Optimistic UI updates
+#### Database Optimization
+- **Indexing**: Strategic indexes on frequently queried columns
+- **Partitioning**: Time-based partitioning for large datasets
+- **Connection Pooling**: Efficient database connection management
 
-3. Caching Strategy
-   - Browser caching for static assets
-   - Service worker for offline capabilities
-   - React Query for API response caching
-   - CDN for global distribution
+#### Frontend Optimization
+- **Code Splitting**: Lazy loading of components
+- **Caching**: React Query for API response caching
+- **Bundle Optimization**: Tree shaking and minification
 
-4. Real-time Updates
-   - WebSocket connections for live updates
-   - Efficient subscription management
-   - Debounced search queries
-```
+#### Cryptographic Optimization
+- **Web Workers**: Offload encryption/decryption to background threads
+- **Batch Operations**: Efficient handling of multiple messages
+- **Memory Management**: Proper cleanup of sensitive data
 
-### Scalability Considerations
-- Horizontal scaling via database read replicas
-- Edge function deployment for global latency
-- CDN integration for static assets
-- Background job processing for cleanup tasks
+### Scalability
 
-## Integration Architecture
+#### Horizontal Scaling
+- **CDN**: Static asset delivery optimization
+- **Load Balancing**: Multiple server instances
+- **Database Sharding**: Geographic data distribution
 
-### Wallet Integration
+#### Vertical Scaling
+- **Resource Optimization**: Efficient memory and CPU usage
+- **Connection Pooling**: Database connection optimization
+- **Caching Layers**: Redis for frequently accessed data
+
+## Monitoring & Observability
+
+### Metrics Collection
+
+#### Application Metrics
+- **Message Volume**: Encryption/decryption rates
+- **Success Rates**: Decryption success percentages
+- **Performance**: Response times and throughput
+- **Errors**: Error rates and types
+
+#### Security Metrics
+- **Failed Decryptions**: Potential attack attempts
+- **Rate Limit Violations**: Abuse detection
+- **Signature Failures**: Authentication issues
+- **Expired Messages**: Cleanup effectiveness
+
+### Logging Strategy
+
+#### Structured Logging
 ```typescript
-interface WalletProvider {
-  connect(): Promise<string>; // Returns wallet address
-  sign(message: string): Promise<string>; // Signs verification message
-  getPublicKey(): Promise<string>; // For encryption
-  isConnected(): boolean;
-  disconnect(): void;
-}
-
-// Supported Wallets
-const supportedWallets = [
-  'MetaMask',
-  'WalletConnect',
-  'Coinbase Wallet',
-  'Ledger',
-  'Trezor'
-];
-```
-
-### Blockchain Integration
-```typescript
-// Minimal blockchain interaction
-interface BlockchainService {
-  verifyAddress(address: string): boolean;
-  validateSignature(
-    message: string, 
-    signature: string, 
-    address: string
-  ): boolean;
-  derivePublicKey(address: string): string;
+interface LogEntry {
+  timestamp: string;
+  level: 'info' | 'warn' | 'error';
+  component: string;
+  action: string;
+  metadata: Record<string, any>;
+  userId?: string; // Truncated address for privacy
 }
 ```
+
+#### Privacy-Preserving Logs
+- **Address Truncation**: Only log first/last 4 characters
+- **Message Content**: Never log plaintext messages
+- **Sensitive Data**: Exclude private keys and signatures
 
 ## Deployment Architecture
 
-### Infrastructure
-```
-Production Environment:
-├── Frontend: Vercel/Netlify CDN
-├── Backend: Supabase Cloud
-├── Database: PostgreSQL (Supabase)
-├── Edge Functions: Deno Deploy
-└── Monitoring: Supabase Analytics + Sentry
+### Environment Configuration
 
-Development Environment:
-├── Frontend: Local Vite dev server
-├── Backend: Supabase local development
-├── Database: Local PostgreSQL
-└── Testing: Vitest + Playwright
-```
+#### Development
+- **Local Database**: Supabase local development
+- **Hot Reloading**: Vite development server
+- **Debug Mode**: Enhanced error messages and logging
+
+#### Production
+- **CDN**: Global content delivery
+- **SSL/TLS**: End-to-end encryption
+- **Security Headers**: CSP, HSTS, etc.
+- **Monitoring**: Real-time application monitoring
 
 ### CI/CD Pipeline
-```
-1. Code commit to repository
-2. Automated testing (unit + integration)
-3. Security scanning (dependencies + SAST)
-4. Build optimization and bundling
-5. Deployment to staging environment
-6. Automated E2E testing
-7. Production deployment approval
-8. Database migration execution
-9. Production deployment
-10. Health checks and monitoring
-```
 
-## Monitoring & Analytics
+#### Build Process
+1. **Code Quality**: ESLint and TypeScript checks
+2. **Testing**: Unit and integration tests
+3. **Security Scan**: Dependency vulnerability scanning
+4. **Build**: Production-optimized build
+5. **Deploy**: Automated deployment to production
 
-### Application Metrics
-- Message encryption/decryption rates
-- Wallet connection success rates
-- Search query performance
-- Error rates and response times
-- User engagement patterns
+#### Deployment Strategy
+- **Blue-Green**: Zero-downtime deployments
+- **Rollback**: Quick rollback capabilities
+- **Health Checks**: Automated health monitoring
+- **Gradual Rollout**: Feature flag-based releases
 
-### Security Monitoring
-- Failed signature verification attempts
-- Suspicious access patterns
-- Rate limit violations
-- Encryption/decryption anomalies
+## Future Architecture Considerations
 
-### Performance Monitoring
-- Database query performance
-- Frontend load times
-- API response times
-- Real-time connection stability
+### Planned Enhancements
 
-## Compliance & Privacy
+#### Multi-Chain Support
+- **Polygon**: Lower gas fees for frequent users
+- **BSC**: Alternative blockchain option
+- **Cross-Chain**: Interoperability between chains
 
-### Data Retention
-- Encrypted messages: Until expiration date
-- Analytics data: Aggregated, no PII
-- Wallet addresses: Hashed for privacy
-- Logs: 30-day retention maximum
+#### Advanced Features
+- **Group Messaging**: Multi-recipient encryption
+- **File Attachments**: Encrypted file sharing
+- **Message Threading**: Conversation organization
+- **Mobile App**: Native mobile applications
 
-### Privacy by Design
-- No personal information collection
-- Wallet addresses as pseudo-anonymous identifiers
-- Optional sender anonymity
-- Client-side decryption only
-- Automatic data expiration
+#### Scalability Improvements
+- **Microservices**: Service decomposition
+- **Event Sourcing**: Event-driven architecture
+- **CQRS**: Command Query Responsibility Segregation
+- **Distributed Caching**: Redis cluster implementation
+
+---
+
+**Architecture Version**: v0.1  
+**Last Updated**: July 31, 2025  
+**Next Review**: August 31, 2025

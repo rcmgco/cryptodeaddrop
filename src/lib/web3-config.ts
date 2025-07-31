@@ -6,9 +6,9 @@ import { walletConnect, injected, coinbaseWallet } from 'wagmi/connectors'
 const projectId = 'b0e4a4d2be0a8c3e7c8f9a5b1d2e3f4a' // Demo project ID - replace with your own
 
 const metadata = {
-  name: 'DeGhost Messenger v0.1',
-  description: 'Secure. Decentralized. Ephemeral messaging using Ethereum wallet encryption',
-  url: 'https://deghost-messenger.lovable.app',
+  name: 'CryptoDeadDrop v0.1',
+  description: 'Anonymous encrypted drops using Ethereum wallet encryption',
+  url: 'https://localhost:5173',
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 

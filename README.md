@@ -1,10 +1,10 @@
-# Ghost Key Whisper (DeGhost Messenger)
+# CryptoDeadDrop
 
 A decentralized, privacy-focused messaging platform that enables secure communication using Ethereum wallet addresses and cryptographic encryption.
 
 ## 🎯 Overview
 
-Ghost Key Whisper is a Web3-native messaging application that leverages blockchain technology to provide truly private, decentralized communication. Messages are encrypted using the recipient's Ethereum public key and can only be decrypted by the holder of the corresponding private key through cryptographic signature verification.
+CryptoDeadDrop is a Web3-native messaging application that leverages blockchain technology to provide truly private, decentralized communication. Messages are encrypted using the recipient's Ethereum public key and can only be decrypted by the holder of the corresponding private key through cryptographic signature verification.
 
 ### Core Features
 
@@ -28,7 +28,7 @@ Ghost Key Whisper is a Web3-native messaging application that leverages blockcha
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd ghost-key-whisper
+cd cryptodeaddrop
 
 # Install dependencies
 npm install

@@ -1,4 +1,4 @@
-# DeGhost Messenger v0.1 - Product Requirements Document
+# CryptoDeadDrop v0.1 - Product Requirements Document
 
 ## Product Vision
 A decentralized messaging platform where messages are encrypted using Ethereum wallet addresses and can only be decrypted by the private key holder through gasless signature verification.

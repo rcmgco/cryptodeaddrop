@@ -7,7 +7,7 @@ import { useAccount, useSignMessage } from 'wagmi'
  */
 export function generateChallengeMessage(address: string, messageId: string): string {
   const timestamp = Date.now()
-  const message = `DeGhost Messenger v0.1
+  const message = `CryptoDeadDrop v0.1
 
 By signing this message, you are proving ownership of the wallet address:
 ${address}

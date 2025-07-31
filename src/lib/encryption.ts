@@ -52,7 +52,7 @@ export function deriveKeys(sharedSecret: Uint8Array, salt: Uint8Array = new Uint
   encryptionKey: Uint8Array
   macKey: Uint8Array
 } {
-  const info = utf8ToBytes('DeGhost-Messenger-v0.1')
+  const info = utf8ToBytes('CryptoDeadDrop-v0.1')
   const prk = sha256(concatBytes(salt, sharedSecret))
   
   // Derive 64 bytes: 32 for encryption, 32 for MAC

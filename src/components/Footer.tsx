@@ -8,7 +8,7 @@ export function Footer() {
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
             <p className="text-sm text-muted-foreground">
-              DeGhost Messenger v0.1 - Secure. Decentralized. Ephemeral.
+              CryptoDeadDrop v0.1 - Anonymous. Encrypted. Ephemeral.
             </p>
           </div>
           

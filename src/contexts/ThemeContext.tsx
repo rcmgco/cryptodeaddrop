@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     // Check localStorage first, then system preference
-    const saved = localStorage.getItem('deghost-theme') as Theme
+    const saved = localStorage.getItem('cryptodeaddrop-theme') as Theme
     if (saved) return saved
     
     return 'light' // Default to light theme
@@ -22,7 +22,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
     root.classList.add(theme)
-    localStorage.setItem('deghost-theme', theme)
+    localStorage.setItem('cryptodeaddrop-theme', theme)
   }, [theme])
 
   const toggleTheme = () => {

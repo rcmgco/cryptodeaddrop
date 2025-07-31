@@ -9,7 +9,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Shield className="h-8 w-8 text-primary" />
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-foreground">DeGhost Messenger</h1>
+            <h1 className="text-xl font-bold text-foreground">CryptoDeadDrop</h1>
             <span className="text-xs text-muted-foreground">v0.1</span>
           </div>
         </div>

@@ -247,7 +247,7 @@ export const createMockMessage = (overrides = {}) => ({
 
 // Helper function to create mock challenge
 export const createMockChallenge = (overrides = {}) => ({
-  message: 'DeGhost Messenger v0.1\n\nBy signing this message...',
+        message: 'CryptoDeadDrop v0.1\n\nBy signing this message...',
   messageId: 'test-message-id',
   address: mockEthereumAddress,
   timestamp: Date.now(),
