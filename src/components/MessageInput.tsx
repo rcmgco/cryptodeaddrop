@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -51,26 +52,23 @@ export function MessageInput({
   }
 
   return (
-    <Card className={cn("shadow", className)}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Compose Message</CardTitle>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsPreviewMode(!isPreviewMode)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              {isPreviewMode ? 'Edit' : 'Preview'}
-            </button>
-            <Badge variant={isOverLimit ? "destructive" : "secondary"}>
-              <span className={getCharacterCountColor()}>
-                {characterCount}/{maxLength}
-              </span>
-            </Badge>
-          </div>
+    <div className={cn("space-y-4", className)}>
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-medium">Message Content</Label>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsPreviewMode(!isPreviewMode)}
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            {isPreviewMode ? 'Edit' : 'Preview'}
+          </button>
+          <Badge variant={isOverLimit ? "destructive" : "secondary"}>
+            <span className={getCharacterCountColor()}>
+              {characterCount}/{maxLength}
+            </span>
+          </Badge>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
         {isPreviewMode ? (
           <div className="min-h-[120px] p-3 bg-muted/50 rounded-lg border">
             {value ? (
@@ -95,21 +93,20 @@ export function MessageInput({
             )}
           />
         )}
-        
-        <div className="text-xs text-muted-foreground">
-          <p>
-            <strong>Markdown supported:</strong> *italic*, **bold**, `code`
+      
+      <div className="text-xs text-muted-foreground">
+        <p>
+          <strong>Markdown supported:</strong> *italic*, **bold**, `code`
+        </p>
+        {remaining < 100 && (
+          <p className={getCharacterCountColor()}>
+            {isOverLimit 
+              ? `${Math.abs(remaining)} characters over limit`
+              : `${remaining} characters remaining`
+            }
           </p>
-          {remaining < 100 && (
-            <p className={getCharacterCountColor()}>
-              {isOverLimit 
-                ? `${Math.abs(remaining)} characters over limit`
-                : `${remaining} characters remaining`
-              }
-            </p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        )}
+      </div>
+    </div>
   )
 }

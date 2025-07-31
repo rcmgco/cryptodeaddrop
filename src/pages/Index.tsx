@@ -18,20 +18,16 @@ const Index = () => {
         </p>
       </section>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Message Composer */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-foreground">Compose Message</h2>
-          <MessageComposer />
-        </div>
+      {/* Message Composer - Full Width */}
+      <section className="space-y-4">
+        <MessageComposer />
+      </section>
 
-        {/* Message Explorer */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-foreground">Message Explorer</h2>
-          <MessageExplorer />
-        </div>
-      </div>
+      {/* Message Explorer - Full Width */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold text-foreground">Message Explorer</h2>
+        <MessageExplorer />
+      </section>
 
       {/* Analytics Dashboard */}
       <section className="space-y-4">
