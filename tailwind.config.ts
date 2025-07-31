@@ -17,6 +17,11 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		fontFamily: {
+			sans: ['Oxanium', 'sans-serif'],
+			mono: ['Source Code Pro', 'monospace'],
+			serif: ['ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif']
+		},
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',
@@ -74,23 +79,28 @@ export default {
 					blue: 'hsl(var(--doom-blue))'
 				}
 			},
-			backgroundImage: {
-				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-dark': 'var(--gradient-dark)',
-				'gradient-accent': 'var(--gradient-accent)'
-			},
-			boxShadow: {
-				'doom': 'var(--shadow-doom)',
-				'glow': 'var(--shadow-glow)',
-				'card': 'var(--shadow-card)'
-			},
-			transitionProperty: {
-				'doom': 'var(--transition-doom)'
-			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			letterSpacing: {
+				tighter: 'var(--tracking-tighter)',
+				tight: 'var(--tracking-tight)',
+				normal: 'var(--tracking-normal)',
+				wide: 'var(--tracking-wide)',
+				wider: 'var(--tracking-wider)',
+				widest: 'var(--tracking-widest)'
+			},
+			boxShadow: {
+				'2xs': 'var(--shadow-2xs)',
+				'xs': 'var(--shadow-xs)',
+				'sm': 'var(--shadow-sm)',
+				'DEFAULT': 'var(--shadow)',
+				'md': 'var(--shadow-md)',
+				'lg': 'var(--shadow-lg)',
+				'xl': 'var(--shadow-xl)',
+				'2xl': 'var(--shadow-2xl)'
 			},
 			keyframes: {
 				'accordion-down': {

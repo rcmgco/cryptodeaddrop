@@ -39,7 +39,7 @@ export function ExpirationSelector({ value, onChange, className }: ExpirationSel
   const selectedOption = expirationOptions.find(option => option.value === value)
 
   return (
-    <Card className={cn("shadow-card", className)}>
+    <Card className={cn("shadow", className)}>
       <CardContent className="pt-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="expiration" className="text-sm font-medium">

@@ -51,7 +51,7 @@ export function MessageInput({
   }
 
   return (
-    <Card className={cn("shadow-card", className)}>
+    <Card className={cn("shadow", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Compose Message</CardTitle>

@@ -84,7 +84,7 @@ export function MessageComposer() {
         <Button
           onClick={handleEncrypt}
           disabled={!isFormValid || isEncrypting}
-          className="w-full h-12 text-base font-semibold bg-gradient-primary hover:shadow-glow transition-all duration-300"
+          className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 hover:shadow-lg transition-all duration-300"
         >
           {isEncrypting ? (
             <>

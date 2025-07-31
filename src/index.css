@@ -1,3 +1,9 @@
+@import '@fontsource/oxanium/400.css';
+@import '@fontsource/oxanium/600.css';
+@import '@fontsource/oxanium/700.css';
+@import '@fontsource/source-code-pro/400.css';
+@import '@fontsource/source-code-pro/600.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,122 +14,119 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Doom 64 Light Theme - Cyberpunk Dark Gray Base */
-    --background: 210 11% 15%;
-    --foreground: 0 0% 95%;
+    /* Official Doom 64 Theme - Light Mode */
+    --background: oklch(0.8452 0 0);
+    --foreground: oklch(0.2393 0 0);
+    --card: oklch(0.7572 0 0);
+    --card-foreground: oklch(0.2393 0 0);
+    --popover: oklch(0.7572 0 0);
+    --popover-foreground: oklch(0.2393 0 0);
+    --primary: oklch(0.5016 0.1887 27.4816);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.4955 0.0896 126.1858);
+    --secondary-foreground: oklch(1.0000 0 0);
+    --muted: oklch(0.7826 0 0);
+    --muted-foreground: oklch(0.4091 0 0);
+    --accent: oklch(0.5880 0.0993 245.7394);
+    --accent-foreground: oklch(1.0000 0 0);
+    --destructive: oklch(0.7076 0.1975 46.4558);
+    --destructive-foreground: oklch(0 0 0);
+    --border: oklch(0.4313 0 0);
+    --input: oklch(0.4313 0 0);
+    --ring: oklch(0.5016 0.1887 27.4816);
+    --chart-1: oklch(0.5016 0.1887 27.4816);
+    --chart-2: oklch(0.4955 0.0896 126.1858);
+    --chart-3: oklch(0.5880 0.0993 245.7394);
+    --chart-4: oklch(0.7076 0.1975 46.4558);
+    --chart-5: oklch(0.5656 0.0431 40.4319);
+    --radius: 0px;
+    --sidebar-background: oklch(0.7572 0 0);
+    --sidebar-foreground: oklch(0.2393 0 0);
+    --sidebar-primary: oklch(0.5016 0.1887 27.4816);
+    --sidebar-primary-foreground: oklch(1.0000 0 0);
+    --sidebar-accent: oklch(0.5880 0.0993 245.7394);
+    --sidebar-accent-foreground: oklch(1.0000 0 0);
+    --sidebar-border: oklch(0.4313 0 0);
+    --sidebar-ring: oklch(0.5016 0.1887 27.4816);
 
-    --card: 210 12% 18%;
-    --card-foreground: 0 0% 95%;
+    /* Typography */
+    --font-sans: "Oxanium", sans-serif;
+    --font-mono: "Source Code Pro", monospace;
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    
+    /* Shadows */
+    --shadow-color: hsl(0 0% 0%);
+    --shadow-opacity: 0.4;
+    --shadow-blur: 4px;
+    --shadow-spread: 0px;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 2px;
+    --shadow-2xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.20);
+    --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.20);
+    --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 1px 2px -1px hsl(0 0% 0% / 0.40);
+    --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 1px 2px -1px hsl(0 0% 0% / 0.40);
+    --shadow-md: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 2px 4px -1px hsl(0 0% 0% / 0.40);
+    --shadow-lg: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 4px 6px -1px hsl(0 0% 0% / 0.40);
+    --shadow-xl: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 8px 10px -1px hsl(0 0% 0% / 0.40);
+    --shadow-2xl: 0px 2px 4px 0px hsl(0 0% 0% / 1.00);
 
-    --popover: 210 12% 18%;
-    --popover-foreground: 0 0% 95%;
-
-    /* Primary - Deep Red/Orange (Doom 64 signature) */
-    --primary: 14 85% 55%; /* #FF6B35 */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 14 85% 65%;
-
-    /* Secondary - Darker Grays */
-    --secondary: 210 8% 25%; /* #2D3436 */
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 210 8% 22%;
-    --muted-foreground: 220 9% 55%; /* #636E72 */
-
-    /* Accent - Bright Cyan/Blue highlights */
-    --accent: 184 100% 45%; /* #00B894 */
-    --accent-foreground: 0 0% 100%;
-    --accent-bright: 211 100% 50%; /* #0984E3 */
-
-    --destructive: 348 83% 47%; /* #D63031 */
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 8% 25%;
-    --input: 210 8% 25%;
-    --ring: 14 85% 55%;
-
-    --radius: 0.75rem;
-
-    /* Custom Doom 64 Design Tokens */
-    --doom-red: 14 85% 55%;
-    --doom-orange: 14 85% 65%;
-    --doom-dark: 210 11% 15%;
-    --doom-gray: 210 8% 25%;
-    --doom-cyan: 184 100% 45%;
-    --doom-blue: 211 100% 50%;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-dark: linear-gradient(180deg, hsl(var(--background)), hsl(210 11% 12%));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-bright)));
-
-    /* Shadows and Effects */
-    --shadow-doom: 0 10px 30px -10px hsl(var(--primary) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
-    --shadow-card: 0 4px 20px hsl(210 11% 10% / 0.5);
-
-    /* Animations */
-    --transition-doom: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* Sidebar specific */
-    --sidebar-background: 210 11% 12%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 14 85% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 8% 20%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 210 8% 20%;
-    --sidebar-ring: 14 85% 55%;
+    /* Letter spacing */
+    --letter-spacing: 0em;
+    --tracking-normal: 0em;
+    --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+    --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+    --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+    --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+    --tracking-widest: calc(var(--tracking-normal) + 0.1em);
   }
 
   .dark {
-    /* Doom 64 Dark Theme - Pure Cyberpunk */
-    --background: 210 11% 8%;
-    --foreground: 0 0% 98%;
-
-    --card: 210 11% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 210 11% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    /* Enhanced Primary for dark mode */
-    --primary: 14 85% 60%; /* Brighter in dark */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 14 85% 70%;
-
-    --secondary: 210 8% 15%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 210 8% 15%;
-    --muted-foreground: 220 9% 65%;
-
-    /* Enhanced accent for dark mode */
-    --accent: 184 100% 55%; /* Brighter cyan */
-    --accent-foreground: 0 0% 100%;
-    --accent-bright: 211 100% 60%;
-
-    --destructive: 348 83% 55%; /* Brighter red */
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 8% 15%;
-    --input: 210 8% 15%;
-    --ring: 14 85% 60%;
+    /* Official Doom 64 Theme - Dark Mode */
+    --background: oklch(0.2178 0 0);
+    --foreground: oklch(0.9067 0 0);
+    --card: oklch(0.2850 0 0);
+    --card-foreground: oklch(0.9067 0 0);
+    --popover: oklch(0.2850 0 0);
+    --popover-foreground: oklch(0.9067 0 0);
+    --primary: oklch(0.6083 0.2090 27.0276);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.6423 0.1467 133.0145);
+    --secondary-foreground: oklch(0 0 0);
+    --muted: oklch(0.2645 0 0);
+    --muted-foreground: oklch(0.7058 0 0);
+    --accent: oklch(0.7482 0.1235 244.7492);
+    --accent-foreground: oklch(0 0 0);
+    --destructive: oklch(0.7839 0.1719 68.0943);
+    --destructive-foreground: oklch(0 0 0);
+    --border: oklch(0.4091 0 0);
+    --input: oklch(0.4091 0 0);
+    --ring: oklch(0.6083 0.2090 27.0276);
+    --chart-1: oklch(0.6083 0.2090 27.0276);
+    --chart-2: oklch(0.6423 0.1467 133.0145);
+    --chart-3: oklch(0.7482 0.1235 244.7492);
+    --chart-4: oklch(0.7839 0.1719 68.0943);
+    --chart-5: oklch(0.6471 0.0334 40.7963);
+    --radius: 0px;
+    --sidebar-background: oklch(0.1913 0 0);
+    --sidebar-foreground: oklch(0.9067 0 0);
+    --sidebar-primary: oklch(0.6083 0.2090 27.0276);
+    --sidebar-primary-foreground: oklch(1.0000 0 0);
+    --sidebar-accent: oklch(0.7482 0.1235 244.7492);
+    --sidebar-accent-foreground: oklch(0 0 0);
+    --sidebar-border: oklch(0.4091 0 0);
+    --sidebar-ring: oklch(0.6083 0.2090 27.0276);
 
     /* Enhanced shadows for dark mode */
-    --shadow-doom: 0 10px 40px -10px hsl(var(--primary) / 0.5);
-    --shadow-glow: 0 0 60px hsl(var(--primary-glow) / 0.6);
-    --shadow-card: 0 4px 30px hsl(210 11% 5% / 0.8);
-
-    /* Dark mode sidebar */
-    --sidebar-background: 210 11% 5%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 14 85% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 8% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 210 8% 12%;
-    --sidebar-ring: 14 85% 60%;
+    --shadow-opacity: 0.6;
+    --shadow-blur: 5px;
+    --shadow-2xs: 0px 2px 5px 0px hsl(0 0% 0% / 0.30);
+    --shadow-xs: 0px 2px 5px 0px hsl(0 0% 0% / 0.30);
+    --shadow-sm: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 1px 2px -1px hsl(0 0% 0% / 0.60);
+    --shadow: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 1px 2px -1px hsl(0 0% 0% / 0.60);
+    --shadow-md: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 2px 4px -1px hsl(0 0% 0% / 0.60);
+    --shadow-lg: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 4px 6px -1px hsl(0 0% 0% / 0.60);
+    --shadow-xl: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 8px 10px -1px hsl(0 0% 0% / 0.60);
+    --shadow-2xl: 0px 2px 5px 0px hsl(0 0% 0% / 1.50);
   }
 }
 
@@ -134,5 +137,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    letter-spacing: var(--tracking-normal);
   }
 }

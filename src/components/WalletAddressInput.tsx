@@ -71,7 +71,7 @@ export function WalletAddressInput({ value, onChange, className }: WalletAddress
   }
 
   return (
-    <Card className={cn("shadow-card", className)}>
+    <Card className={cn("shadow", className)}>
       <CardContent className="pt-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="wallet-address" className="text-sm font-medium">

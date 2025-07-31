@@ -69,7 +69,7 @@ export function MessageExplorer() {
   }
 
   return (
-    <Card className="shadow-card">
+    <Card className="shadow">
       <CardHeader>
         <CardTitle className="text-lg">Message Explorer</CardTitle>
         <div className="flex gap-2">

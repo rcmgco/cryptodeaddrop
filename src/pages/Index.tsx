@@ -6,8 +6,8 @@ const Index = () => {
     <div className="container max-w-screen-2xl py-8 space-y-8">
       {/* Hero Section */}
       <section className="text-center space-y-4">
-        <div className="bg-gradient-primary bg-clip-text">
-          <h1 className="text-4xl md:text-6xl font-bold text-transparent">
+        <div className="bg-primary bg-clip-text">
+          <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-primary to-accent bg-clip-text">
             DeGhost Messenger v0.1
           </h1>
         </div>
@@ -39,15 +39,15 @@ const Index = () => {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-foreground text-center">Platform Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
+          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
             <div className="text-3xl font-bold text-primary">3</div>
             <div className="text-sm text-muted-foreground">Encrypted Messages</div>
           </div>
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
+          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
             <div className="text-3xl font-bold text-accent">1</div>
             <div className="text-sm text-muted-foreground">Decrypted Messages</div>
           </div>
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
+          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
             <div className="text-3xl font-bold text-accent-bright">33.3%</div>
             <div className="text-sm text-muted-foreground">Success Rate</div>
           </div>
@@ -57,7 +57,7 @@ const Index = () => {
       {/* Technical Explanation */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-foreground text-center">How It Works</h2>
-        <div className="bg-card border border-border rounded-lg p-6 shadow-card prose prose-sm max-w-none dark:prose-invert">
+        <div className="bg-card border border-border rounded-lg p-6 shadow prose prose-sm max-w-none dark:prose-invert">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-semibold text-primary mb-2">🔐 Encryption Process</h3>
