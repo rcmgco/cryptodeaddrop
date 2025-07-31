@@ -1,5 +1,6 @@
 import { Shield } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { WalletConnection } from '@/components/WalletConnection'
 
 export function Header() {
   return (
@@ -16,9 +17,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-4">
             <ThemeToggle />
-            <div className="text-sm text-muted-foreground">
-              Wallet: Not Connected
-            </div>
+            <WalletConnection />
           </nav>
         </div>
       </div>
