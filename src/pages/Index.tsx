@@ -1,5 +1,6 @@
 import { MessageComposer } from '@/components/MessageComposer'
 import { MessageExplorer } from '@/components/MessageExplorer'
+import { AnalyticsDashboard } from '@/components/AnalyticsDashboard'
 
 const Index = () => {
   return (
@@ -30,23 +31,7 @@ const Index = () => {
       </section>
 
       {/* Analytics Dashboard */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-foreground text-center">Platform Statistics</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
-            <div className="text-3xl font-bold text-primary">3</div>
-            <div className="text-sm text-muted-foreground">Encrypted Messages</div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
-            <div className="text-3xl font-bold text-accent">1</div>
-            <div className="text-sm text-muted-foreground">Decrypted Messages</div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
-            <div className="text-3xl font-bold text-accent">33.3%</div>
-            <div className="text-sm text-muted-foreground">Success Rate</div>
-          </div>
-        </div>
-      </section>
+      <AnalyticsDashboard />
 
       {/* Technical Explanation */}
       <section className="space-y-4">

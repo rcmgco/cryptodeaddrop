@@ -13,21 +13,12 @@ import { Shield, Loader2, CheckCircle, Lock, User, Clock, Eye } from 'lucide-rea
 import { useSignature } from '@/hooks/useSignature'
 import { useAccount } from 'wagmi'
 import { cn } from '@/lib/utils'
-
-interface MockMessage {
-  id: string
-  recipientAddress: string
-  encryptedAt: string
-  expiresIn: string
-  isRead: boolean
-  expiration: string
-  encryptedContent?: string // This would normally be the encrypted message
-}
+import { MessageSummary } from '@/services/messageService'
 
 interface DecryptionModalProps {
   isOpen: boolean
   onClose: () => void
-  message: MockMessage | null
+  message: MessageSummary | null
 }
 
 export function DecryptionModal({ isOpen, onClose, message }: DecryptionModalProps) {

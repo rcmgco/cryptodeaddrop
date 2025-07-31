@@ -4,6 +4,7 @@ import { MessageComposerCard } from '@/components/MessageComposerCard'
 import { RecipientCard } from '@/components/RecipientCard'
 import { Shield, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { encryptAndStoreMessage } from '@/services/messageService'
 
 export function MessageComposer() {
   const [message, setMessage] = useState('')
@@ -46,18 +47,29 @@ export function MessageComposer() {
     setIsEncrypting(true)
     
     try {
-      // Simulate encryption process for now
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      toast({
-        title: "Message Encrypted Successfully",
-        description: `Message encrypted for ${recipientAddress} with ${expiration} day expiration.`,
+      const result = await encryptAndStoreMessage({
+        message,
+        recipientAddress,
+        expirationDays: parseInt(expiration) as 1 | 10 | 30
       })
 
-      // Reset form
-      setMessage('')
-      setRecipientAddress('')
-      setExpiration('10')
+      if (result.success) {
+        toast({
+          title: "Message Encrypted Successfully",
+          description: `Message encrypted for ${recipientAddress} with ${expiration} day expiration.`,
+        })
+
+        // Reset form
+        setMessage('')
+        setRecipientAddress('')
+        setExpiration('10')
+      } else {
+        toast({
+          title: "Encryption Failed",
+          description: result.error || "There was an error encrypting your message.",
+          variant: "destructive",
+        })
+      }
       
     } catch (error) {
       toast({

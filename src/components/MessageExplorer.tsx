@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -6,63 +6,53 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { DecryptionModal } from '@/components/DecryptionModal'
 import { Search, Eye, Clock, CheckCircle, XCircle } from 'lucide-react'
-
-// Mock data for demonstration
-interface MockMessage {
-  id: string
-  recipientAddress: string
-  encryptedAt: string
-  expiresIn: string
-  isRead: boolean
-  expiration: string
-}
-
-const mockMessages: MockMessage[] = [
-  {
-    id: '1',
-    recipientAddress: '0x742d35Cc6625C5532c2B68Deb094B6E0e4b19320',
-    encryptedAt: '2 hours ago',
-    expiresIn: '22 hours',
-    isRead: false,
-    expiration: '1 day'
-  },
-  {
-    id: '2', 
-    recipientAddress: '0x8ba1f109551bD432803012645Hac136c82da2d23',
-    encryptedAt: '1 day ago',
-    expiresIn: '9 days',
-    isRead: true,
-    expiration: '10 days'
-  },
-  {
-    id: '3',
-    recipientAddress: 'vitalik.eth',
-    encryptedAt: '3 days ago',
-    expiresIn: '27 days',
-    isRead: false,
-    expiration: '30 days'
-  }
-]
+import { searchMessages, getRecentMessages, MessageSummary } from '@/services/messageService'
 
 export function MessageExplorer() {
   const [searchAddress, setSearchAddress] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [selectedMessage, setSelectedMessage] = useState<MockMessage | null>(null)
+  const [selectedMessage, setSelectedMessage] = useState<MessageSummary | null>(null)
   const [isDecryptionModalOpen, setIsDecryptionModalOpen] = useState(false)
+  const [messages, setMessages] = useState<MessageSummary[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const filteredMessages = searchAddress 
-    ? mockMessages.filter(msg => 
-        msg.recipientAddress.toLowerCase().includes(searchAddress.toLowerCase())
-      )
-    : mockMessages
+  // Load recent messages on component mount
+  useEffect(() => {
+    loadRecentMessages()
+  }, [])
+
+  const loadRecentMessages = async () => {
+    setIsLoading(true)
+    try {
+      const recentMessages = await getRecentMessages(20)
+      setMessages(recentMessages)
+    } catch (error) {
+      console.error('Failed to load recent messages:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleSearch = async () => {
-    if (!searchAddress.trim()) return
+    if (!searchAddress.trim()) {
+      // If search is empty, load recent messages
+      await loadRecentMessages()
+      return
+    }
     
     setIsSearching(true)
-    // Simulate search
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsSearching(false)
+    try {
+      const searchResults = await searchMessages({
+        recipientAddress: searchAddress,
+        limit: 20
+      })
+      setMessages(searchResults)
+    } catch (error) {
+      console.error('Search failed:', error)
+      setMessages([])
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   const truncateAddress = (address: string) => {
@@ -70,7 +60,7 @@ export function MessageExplorer() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
-  const handleDecryptMessage = (message: MockMessage) => {
+  const handleDecryptMessage = (message: MessageSummary) => {
     setSelectedMessage(message)
     setIsDecryptionModalOpen(true)
   }
@@ -78,6 +68,12 @@ export function MessageExplorer() {
   const handleCloseDecryptionModal = () => {
     setIsDecryptionModalOpen(false)
     setSelectedMessage(null)
+    // Refresh messages after decryption
+    if (searchAddress) {
+      handleSearch()
+    } else {
+      loadRecentMessages()
+    }
   }
 
   const getStatusBadge = (isRead: boolean, expiresIn: string) => {
@@ -107,7 +103,7 @@ export function MessageExplorer() {
           </div>
           <Button 
             onClick={handleSearch}
-            disabled={isSearching || !searchAddress.trim()}
+            disabled={isSearching || isLoading}
             variant="outline"
             className="px-6"
           >
@@ -117,7 +113,11 @@ export function MessageExplorer() {
       </CardHeader>
       
       <CardContent>
-        {filteredMessages.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="text-muted-foreground">Loading messages...</div>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-muted-foreground mb-2">
               {searchAddress ? (
@@ -138,7 +138,7 @@ export function MessageExplorer() {
         ) : (
           <div className="space-y-4">
             <div className="text-sm text-muted-foreground">
-              Showing {filteredMessages.length} message{filteredMessages.length !== 1 ? 's' : ''}
+              Showing {messages.length} message{messages.length !== 1 ? 's' : ''}
               {searchAddress && ` for "${searchAddress}"`}
             </div>
             
@@ -154,7 +154,7 @@ export function MessageExplorer() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredMessages.map((message) => (
+                  {messages.map((message) => (
                     <TableRow key={message.id} className="hover:bg-muted/50">
                       <TableCell>
                         <code className="text-sm bg-muted px-2 py-1 rounded">
