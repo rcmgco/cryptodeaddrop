@@ -14,13 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          message_id: string | null
+          metadata: Json | null
+          recipient_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          created_at: string
+          encrypted_content: string
+          expiration_days: number
+          expires_at: string
+          id: string
+          is_read: boolean
+          read_at: string | null
+          recipient_address: string
+          sender_identifier: string | null
+        }
+        Insert: {
+          created_at?: string
+          encrypted_content: string
+          expiration_days: number
+          expires_at: string
+          id?: string
+          is_read?: boolean
+          read_at?: string | null
+          recipient_address: string
+          sender_identifier?: string | null
+        }
+        Update: {
+          created_at?: string
+          encrypted_content?: string
+          expiration_days?: number
+          expires_at?: string
+          id?: string
+          is_read?: boolean
+          read_at?: string | null
+          recipient_address?: string
+          sender_identifier?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_messages: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
