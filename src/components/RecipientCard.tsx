@@ -161,14 +161,6 @@ export function RecipientCard({
             </SelectContent>
           </Select>
         </div>
-
-        <div className="bg-secondary/50 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-foreground mb-2">Supported Formats</h4>
-          <ul className="text-xs text-muted-foreground space-y-1">
-            <li>• Ethereum Address: 0x742d35Cc6625C5532c2B68Deb094B6E0e4b19320</li>
-            <li>• ENS Domain: vitalik.eth</li>
-          </ul>
-        </div>
       </CardContent>
     </Card>
   )
