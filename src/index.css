@@ -1,132 +1,80 @@
-@import '@fontsource/oxanium/400.css';
-@import '@fontsource/oxanium/600.css';
-@import '@fontsource/oxanium/700.css';
-@import '@fontsource/source-code-pro/400.css';
-@import '@fontsource/source-code-pro/600.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
     /* Official Doom 64 Theme - Light Mode */
-    --background: oklch(0.8452 0 0);
-    --foreground: oklch(0.2393 0 0);
-    --card: oklch(0.7572 0 0);
-    --card-foreground: oklch(0.2393 0 0);
-    --popover: oklch(0.7572 0 0);
-    --popover-foreground: oklch(0.2393 0 0);
-    --primary: oklch(0.5016 0.1887 27.4816);
-    --primary-foreground: oklch(1.0000 0 0);
-    --secondary: oklch(0.4955 0.0896 126.1858);
-    --secondary-foreground: oklch(1.0000 0 0);
-    --muted: oklch(0.7826 0 0);
-    --muted-foreground: oklch(0.4091 0 0);
-    --accent: oklch(0.5880 0.0993 245.7394);
-    --accent-foreground: oklch(1.0000 0 0);
-    --destructive: oklch(0.7076 0.1975 46.4558);
-    --destructive-foreground: oklch(0 0 0);
-    --border: oklch(0.4313 0 0);
-    --input: oklch(0.4313 0 0);
-    --ring: oklch(0.5016 0.1887 27.4816);
-    --chart-1: oklch(0.5016 0.1887 27.4816);
-    --chart-2: oklch(0.4955 0.0896 126.1858);
-    --chart-3: oklch(0.5880 0.0993 245.7394);
-    --chart-4: oklch(0.7076 0.1975 46.4558);
-    --chart-5: oklch(0.5656 0.0431 40.4319);
+    --background: 215.4 16.3% 85.3%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 220 14.3% 75.9%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 220 14.3% 75.9%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 22.76 67.08% 50.78%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 130.77 34.48% 49.41%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 14.3% 78.6%;
+    --muted-foreground: 220 8.9% 40.5%;
+    --accent: 244.44 50% 70.59%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 46.84 70.97% 70.39%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 220 13% 43.1%;
+    --input: 220 13% 43.1%;
+    --ring: 22.76 67.08% 50.78%;
+    --chart-1: 22.76 67.08% 50.78%;
+    --chart-2: 130.77 34.48% 49.41%;
+    --chart-3: 244.44 50% 70.59%;
+    --chart-4: 46.84 70.97% 70.39%;
+    --chart-5: 40.71 17.87% 56.27%;
     --radius: 0px;
-    --sidebar-background: oklch(0.7572 0 0);
-    --sidebar-foreground: oklch(0.2393 0 0);
-    --sidebar-primary: oklch(0.5016 0.1887 27.4816);
-    --sidebar-primary-foreground: oklch(1.0000 0 0);
-    --sidebar-accent: oklch(0.5880 0.0993 245.7394);
-    --sidebar-accent-foreground: oklch(1.0000 0 0);
-    --sidebar-border: oklch(0.4313 0 0);
-    --sidebar-ring: oklch(0.5016 0.1887 27.4816);
-
-    /* Typography */
-    --font-sans: "Oxanium", sans-serif;
-    --font-mono: "Source Code Pro", monospace;
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    
-    /* Shadows */
-    --shadow-color: hsl(0 0% 0%);
-    --shadow-opacity: 0.4;
-    --shadow-blur: 4px;
-    --shadow-spread: 0px;
-    --shadow-offset-x: 0px;
-    --shadow-offset-y: 2px;
-    --shadow-2xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.20);
-    --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.20);
-    --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 1px 2px -1px hsl(0 0% 0% / 0.40);
-    --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 1px 2px -1px hsl(0 0% 0% / 0.40);
-    --shadow-md: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 2px 4px -1px hsl(0 0% 0% / 0.40);
-    --shadow-lg: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 4px 6px -1px hsl(0 0% 0% / 0.40);
-    --shadow-xl: 0px 2px 4px 0px hsl(0 0% 0% / 0.40), 0px 8px 10px -1px hsl(0 0% 0% / 0.40);
-    --shadow-2xl: 0px 2px 4px 0px hsl(0 0% 0% / 1.00);
-
-    /* Letter spacing */
-    --letter-spacing: 0em;
-    --tracking-normal: 0em;
-    --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
-    --tracking-tight: calc(var(--tracking-normal) - 0.025em);
-    --tracking-wide: calc(var(--tracking-normal) + 0.025em);
-    --tracking-wider: calc(var(--tracking-normal) + 0.05em);
-    --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+    --sidebar-background: 220 14.3% 75.9%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 22.76 67.08% 50.78%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 244.44 50% 70.59%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 13% 43.1%;
+    --sidebar-ring: 22.76 67.08% 50.78%;
   }
 
   .dark {
     /* Official Doom 64 Theme - Dark Mode */
-    --background: oklch(0.2178 0 0);
-    --foreground: oklch(0.9067 0 0);
-    --card: oklch(0.2850 0 0);
-    --card-foreground: oklch(0.9067 0 0);
-    --popover: oklch(0.2850 0 0);
-    --popover-foreground: oklch(0.9067 0 0);
-    --primary: oklch(0.6083 0.2090 27.0276);
-    --primary-foreground: oklch(1.0000 0 0);
-    --secondary: oklch(0.6423 0.1467 133.0145);
-    --secondary-foreground: oklch(0 0 0);
-    --muted: oklch(0.2645 0 0);
-    --muted-foreground: oklch(0.7058 0 0);
-    --accent: oklch(0.7482 0.1235 244.7492);
-    --accent-foreground: oklch(0 0 0);
-    --destructive: oklch(0.7839 0.1719 68.0943);
-    --destructive-foreground: oklch(0 0 0);
-    --border: oklch(0.4091 0 0);
-    --input: oklch(0.4091 0 0);
-    --ring: oklch(0.6083 0.2090 27.0276);
-    --chart-1: oklch(0.6083 0.2090 27.0276);
-    --chart-2: oklch(0.6423 0.1467 133.0145);
-    --chart-3: oklch(0.7482 0.1235 244.7492);
-    --chart-4: oklch(0.7839 0.1719 68.0943);
-    --chart-5: oklch(0.6471 0.0334 40.7963);
+    --background: 224 71.4% 21.6%;
+    --foreground: 210 20% 90.4%;
+    --card: 224 71.4% 28.5%;
+    --card-foreground: 210 20% 90.4%;
+    --popover: 224 71.4% 28.5%;
+    --popover-foreground: 210 20% 90.4%;
+    --primary: 22.42 75.25% 60.59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 131.52 46.27% 64.12%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 215 27.9% 26.4%;
+    --muted-foreground: 217.9 10.6% 70.6%;
+    --accent: 245.28 57.14% 74.71%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 68.4 62.26% 78.24%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 215 27.9% 40.9%;
+    --input: 215 27.9% 40.9%;
+    --ring: 22.42 75.25% 60.59%;
+    --chart-1: 22.42 75.25% 60.59%;
+    --chart-2: 131.52 46.27% 64.12%;
+    --chart-3: 245.28 57.14% 74.71%;
+    --chart-4: 68.4 62.26% 78.24%;
+    --chart-5: 40.71 13.38% 64.71%;
     --radius: 0px;
-    --sidebar-background: oklch(0.1913 0 0);
-    --sidebar-foreground: oklch(0.9067 0 0);
-    --sidebar-primary: oklch(0.6083 0.2090 27.0276);
-    --sidebar-primary-foreground: oklch(1.0000 0 0);
-    --sidebar-accent: oklch(0.7482 0.1235 244.7492);
-    --sidebar-accent-foreground: oklch(0 0 0);
-    --sidebar-border: oklch(0.4091 0 0);
-    --sidebar-ring: oklch(0.6083 0.2090 27.0276);
-
-    /* Enhanced shadows for dark mode */
-    --shadow-opacity: 0.6;
-    --shadow-blur: 5px;
-    --shadow-2xs: 0px 2px 5px 0px hsl(0 0% 0% / 0.30);
-    --shadow-xs: 0px 2px 5px 0px hsl(0 0% 0% / 0.30);
-    --shadow-sm: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 1px 2px -1px hsl(0 0% 0% / 0.60);
-    --shadow: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 1px 2px -1px hsl(0 0% 0% / 0.60);
-    --shadow-md: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 2px 4px -1px hsl(0 0% 0% / 0.60);
-    --shadow-lg: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 4px 6px -1px hsl(0 0% 0% / 0.60);
-    --shadow-xl: 0px 2px 5px 0px hsl(0 0% 0% / 0.60), 0px 8px 10px -1px hsl(0 0% 0% / 0.60);
-    --shadow-2xl: 0px 2px 5px 0px hsl(0 0% 0% / 1.50);
+    --sidebar-background: 224 71.4% 19.1%;
+    --sidebar-foreground: 210 20% 90.4%;
+    --sidebar-primary: 22.42 75.25% 60.59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 245.28 57.14% 74.71%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 215 27.9% 40.9%;
+    --sidebar-ring: 22.42 75.25% 60.59%;
   }
 }
 
@@ -137,7 +85,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-    letter-spacing: var(--tracking-normal);
+    font-family: "Oxanium", sans-serif;
+    letter-spacing: 0em;
   }
 }

@@ -6,11 +6,9 @@ const Index = () => {
     <div className="container max-w-screen-2xl py-8 space-y-8">
       {/* Hero Section */}
       <section className="text-center space-y-4">
-        <div className="bg-primary bg-clip-text">
-          <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-gradient-to-r from-primary to-accent bg-clip-text">
-            DeGhost Messenger v0.1
-          </h1>
-        </div>
+        <h1 className="text-4xl md:text-6xl font-bold text-foreground">
+          DeGhost Messenger v0.1
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Secure. Decentralized. Ephemeral.
         </p>
@@ -48,7 +46,7 @@ const Index = () => {
             <div className="text-sm text-muted-foreground">Decrypted Messages</div>
           </div>
           <div className="bg-card border border-border rounded-lg p-6 text-center shadow">
-            <div className="text-3xl font-bold text-accent-bright">33.3%</div>
+            <div className="text-3xl font-bold text-accent">33.3%</div>
             <div className="text-sm text-muted-foreground">Success Rate</div>
           </div>
         </div>
