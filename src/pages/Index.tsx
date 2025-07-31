@@ -1,3 +1,6 @@
+import { MessageComposer } from '@/components/MessageComposer'
+import { MessageExplorer } from '@/components/MessageExplorer'
+
 const Index = () => {
   return (
     <div className="container max-w-screen-2xl py-8 space-y-8">
@@ -19,37 +22,33 @@ const Index = () => {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Message Composer Placeholder */}
+        {/* Message Composer */}
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-foreground">Compose Message</h2>
-          <div className="bg-card border border-border rounded-lg p-6 shadow-card">
-            <p className="text-muted-foreground">Message composer will be implemented in Phase 2</p>
-          </div>
+          <MessageComposer />
         </div>
 
-        {/* Message Explorer Placeholder */}
+        {/* Message Explorer */}
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-foreground">Message Explorer</h2>
-          <div className="bg-card border border-border rounded-lg p-6 shadow-card">
-            <p className="text-muted-foreground">Message explorer will be implemented in Phase 6</p>
-          </div>
+          <MessageExplorer />
         </div>
       </div>
 
-      {/* Analytics Placeholder */}
+      {/* Analytics Dashboard */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-foreground text-center">Platform Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
-            <div className="text-3xl font-bold text-primary">0</div>
+            <div className="text-3xl font-bold text-primary">3</div>
             <div className="text-sm text-muted-foreground">Encrypted Messages</div>
           </div>
           <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
-            <div className="text-3xl font-bold text-accent">0</div>
+            <div className="text-3xl font-bold text-accent">1</div>
             <div className="text-sm text-muted-foreground">Decrypted Messages</div>
           </div>
           <div className="bg-card border border-border rounded-lg p-6 text-center shadow-card">
-            <div className="text-3xl font-bold text-accent-bright">0%</div>
+            <div className="text-3xl font-bold text-accent-bright">33.3%</div>
             <div className="text-sm text-muted-foreground">Success Rate</div>
           </div>
         </div>
